@@ -132,7 +132,7 @@ Handles authentication and core profile data.
 - `role`: `VARCHAR(20)` (Enum: `['RESIDENT', 'ADMIN', 'SUPERADMIN']`)
 - `is_active`: `BOOLEAN` (Default: `True`)
 
-_Constraints:_ `Unique(tenant_id, national_id)` and `Unique(tenant_id, phone_number)`. This ensures credentials are unique inside a single condominium, but allows the same phone/cédula to exist in different tenants if a user owns properties in multiple complexes.
+_Constraints:_ `Unique(tenant_id, national_id)` and `Unique(tenant_id, phone_number)`.
 
 #### 5.1.3 `Property` (Real Estate Units)
 
@@ -146,7 +146,19 @@ Represents physical apartments, townhouses, or shops.
 - `unit_number`: `VARCHAR(50)` (e.g., "Apto 42")
 - `current_balance`: `NUMERIC(12, 2)` (Default: `0.00`)
 
-#### 5.1.4 `Transaction` (Financial Reconciliation Ledger)
+#### 5.1.4 `BoardBankAccount` (Condominium Clearing Accounts)
+
+Stores the physical financial endpoints used by the board to receive payments.
+
+- `id`: `UUID` (Primary Key)
+- `tenant_id`: `UUID` (Foreign Key -> Tenant)
+- `bank_name`: `VARCHAR(100)` (e.g., "Banco de Venezuela")
+- `account_number`: `VARCHAR(20)` (Nullable for pure Pago Móvil channels)
+- `pago_movil_phone`: `VARCHAR(20)` (Nullable for pure wire accounts)
+- `pago_movil_id`: `VARCHAR(20)` (Cédula/RIF linked to Pago Móvil)
+- `is_active`: `BOOLEAN` (Default: `True`)
+
+#### 5.1.5 `Transaction` (Financial Reconciliation Ledger)
 
 Tracks reported customer payments and automated reconciliation outcomes.
 
@@ -154,9 +166,21 @@ Tracks reported customer payments and automated reconciliation outcomes.
 - `tenant_id`: `UUID` (Foreign Key -> Tenant)
 - `property_id`: `UUID` (Foreign Key -> Property)
 - `reported_by_id`: `UUID` (Foreign Key -> CustomUser)
+- `destination_account_id`: `UUID` (Foreign Key -> BoardBankAccount)
 - `amount`: `NUMERIC(12, 2)`
 - `reference_last_4`: `VARCHAR(4)` (Deterministic user input / OCR index key)
 - `evidence_file_url`: `VARCHAR(512)` (Stored receipt path link)
 - `status`: `VARCHAR(30)` (Enum: `['PENDING_AI', 'APPROVED_AUTO', 'PENDING_MANUAL_REVIEW', 'APPROVED_MANUAL', 'REJECTED']`)
-- `ai_confidence_score`: `NUMERIC(5, 2)` (Nullable, validation metadata)
+- `ai_confidence_score`: `NUMERIC(5, 2)` (Nullable)
 - `created_at`: `TIMESTAMP`
+
+#### 5.1.6 `ShortURL` (In-House Redirection Records)
+
+Maps highly compressed alphabetic base62 tokens to extended runtime parameters.
+
+- `id`: `BIGSERIAL` (Primary Key, incremental integer used for fast indexing)
+- `token`: `VARCHAR(10)` (Unique, Base62 encoded representation of the row index, e.g., "7bK9X")
+- `destination_url`: `TEXT` (Full path containing multi-tenant parameters and query flags)
+- `created_at`: `TIMESTAMP`
+
+_Indices:_ `Unique(token)` clustered index for near-instant string index evaluation.
