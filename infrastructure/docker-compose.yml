@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: aporte_postgres_local
+    environment:
+      POSTGRES_USER: aporte_admin
+      POSTGRES_PASSWORD: aporte_secure_pass2026
+      POSTGRES_DB: aporte_db_local
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - aporte_network
+    restart: unless-stopped
+
+  redis:
+    image: redis/redis-stack:latest
+    container_name: aporte_redis_local
+    environment:
+      REDIS_ARGS: "--requirepass aporte_redis_pass2026"
+    ports:
+      - "6379:6379"       # Standard Redis port for Backend connections
+      - "8001:8001"       # RedisInsight graphical interface (Local Dashboard)
+    volumes:
+      - redis_data:/data
+    networks:
+      - aporte_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  aporte_network:
+    driver: bridge

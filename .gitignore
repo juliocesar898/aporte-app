@@ -1,0 +1,75 @@
+# ==============================================================================
+# APORTE FINTECH SAAS - GLOBAL MONOREPO GITIGNORE
+# ==============================================================================
+
+# 🔐 Security & Environment Variables
+.env
+.env.local
+.env.*.local
+*.env
+*.pem
+*.key
+
+# 🐍 Python & Django (Backend)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/
+pip-log.txt
+pip-delete-this-directory.txt
+.toast/
+.mypy_cache/
+.pytest_cache/
+.hypothesis/
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# 📦 Node.js & Next.js (Frontend)
+node_modules/
+.pnpm-store/
+.next/
+out/
+build/
+dist/
+.storybook-build/
+.eslintcache
+*.tsbuildinfo
+next-env.d.ts
+
+# 🐳 Docker & Infrastructure Runtime Data
+.docker/
+infrastructure/postgres_data/
+infrastructure/redis_data/
+*.log
+
+# 💻 Operating System & IDE Artifacts
+.workspace
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
