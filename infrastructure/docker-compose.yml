@@ -20,8 +20,8 @@ services:
     environment:
       REDIS_ARGS: "--requirepass aporte_redis_pass2026"
     ports:
-      - "6379:6379"       # Standard Redis port for Backend connections
-      - "8001:8001"       # RedisInsight graphical interface (Local Dashboard)
+      - "6379:6379" # Standard Redis port for Backend connections
+      - "8001:8001" # RedisInsight graphical interface (Local Dashboard)
     volumes:
       - redis_data:/data
     networks:
