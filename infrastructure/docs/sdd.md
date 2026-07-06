@@ -34,14 +34,22 @@ The platform implements an adaptable authorization path inside Django REST Frame
    - **Mechanism:** Email + Strong Password + Mandatory **Two-Factor Authentication (2FA)**.
    - **Dynamic Trigger:** When a unified user with administrative privileges attempts to elevate their context from the personal resident dashboard to the global financial backend panel, the Next.js frontend intercepts the route and enforces a **Step-up Authentication** challenge. The user must provide their password and validate a temporary 5-minute OTP dispatched via Redis before global financial access tokens are granted.
 
-### 2.2 Multi-Tenant Data Isolation Strategy
+### 2.2 Three-Tier User Hierarchy & Role Segregation
+To decouple core platform infrastructure management from multi-tenant client business logic, the system enforces three strictly bounded user execution layers:
 
-Aporte employs a **Shared Database, Isolated Schemas / Shared Schema with Tenant Discriminator** design inside PostgreSQL to map distinct real estate entities.
+1. **Platform Super-Admin (Global System Level):**
+   - **Access Point:** Restricted exclusively to the Django native administrative panel (`/admin/`).
+   - **Capabilities:** Operational master control. Provisioning new Tenants, monitoring global health metrics, auditing asynchronous AI logs, and toggling multi-tenant subscription states (`is_active = True/False`).
+   - **Constraint:** Completely isolated from tenant-specific accounting entries.
 
-- **Tenant Resolution:** The Next.js frontend captures the target cluster context via subdomains or route prefixes (e.g., `lossauces.aporte.com`).
-- **API Isolation Contract:** Every HTTP request dispatched to the DRF API must contain a mandatory custom header: `X-Tenant-ID: <tenant-uuid>`.
-- **Backend Middleware Enforcement:** A global scoping middleware intercepts inbound requests, validates the cryptographic token, and enforces a strict structural filter on all active ORM queries (`QuerySet.filter(tenant_id=current_tenant)`), ensuring cross-tenant data leaks are mathematically impossible.
+2. **Condominium Administrator (Client B2B Level):**
+   - **Access Point:** Next.js private web dashboard (`[subdomain].aporte.com/dashboard/admin`).
+   - **Capabilities:** Configure community board bank accounts, manage property ledgers, input manual overrides, and review AI automated payment reconciliation outputs.
+   - **Constraint:** Hard-blocked at the gateway level from accessing the `/admin/` URI path.
 
+3. **Resident / Coproprietary (End-User B2C Level):**
+   - **Access Point:** Next.js Mobile-first PWA interface (`[subdomain].aporte.com/`).
+   - **Capabilities:** Report "Pago Móvil" and wire payments, download individual monthly receipts, view community announcements, and participate in local cluster voting.
 ---
 
 ## 3. Asynchronous AI Bank Reconciliation Pipeline
