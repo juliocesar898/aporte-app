@@ -37,7 +37,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "tenants",
 ]
+
+AUTH_USER_MODEL = "tenants.User"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -72,7 +75,7 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 # Database Configuration mapping individual environment variables
 DATABASES = {
-    'default': env.db_url_config(
+    "default": env.db_url_config(
         f"postgres://{env('DB_USER')}:{env('DB_PASSWORD')}@{env('DB_HOST')}:{env('DB_PORT')}/{env('DB_NAME')}"
     )
 }
